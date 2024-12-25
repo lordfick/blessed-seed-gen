@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blessed Seed Generation - Merry Christmas</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000; /* Black background for fireworks */
+            font-family: 'Arial', sans-serif;
+            color: #fff;
+            text-align: center;
+            overflow: hidden; /* Prevent scrolling for fireworks effect */
+        }
+        .banner {
+            position: relative;
+            z-index: 10; /* Ensures banner is above fireworks */
+            background: rgba(255, 255, 255, 0.9); /* White background with transparency */
+            margin: 50px auto;
+            border-radius: 15px;
+            padding: 20px;
+            width: 90%;
+            max-width: 800px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+        }
+        .banner img {
+            width: 150px;
+            height: auto;
+            border-radius: 10%;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .banner h1 {
+            font-size: 2.5em;
+            color: #b71c1c; /* Christmas red */
+            margin-bottom: 10px;
+        }
+        .banner p {
+            font-size: 1.2em;
+            color: #424242; /* Dark gray text */
+            margin: 10px 0;
+        }
+        .message {
+            font-size: 1.1em;
+            color: #1b5e20; /* Festive green */
+            line-height: 1.6;
+        }
+        .flowers {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        .flowers img {
+            width: 60px;
+            height: auto;
+        }
+        .fireworks {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5; /* Fireworks behind the banner */
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Fireworks -->
+    <div class="fireworks">
+        <canvas id="fireworksCanvas"></canvas>
+    </div>
+
+    <!-- Banner -->
+    <div class="banner">
+        <!-- Central Image -->
+        <img src="bsg.jpg" alt="Blessed Seed Generation">
+        
+        <!-- Title -->
+        <h1>Blessed Seed Generation</h1>
+
+        <!-- Christmas Message -->
+        <p class="message">
+            To all members of the Blessed Seed Generation, Merry Christmas! 
+            May this season bring you joy, peace, and the warmth of God’s love. 
+            As we reflect on His blessings and grace, let us walk into the New Year with renewed faith and purpose. 
+            Wishing you a season filled with hope, unity, and endless joy!
+        </p>
+
+        <!-- Decorative Christmas Flowers -->
+        <div class="flowers">
+            <img src="christ2.webp" alt="Christmas Flower">
+            <img src="christ1.webp" alt="Christmas Flower">
+            <img src="christ3.webp" alt="Christmas Flower">
+        </div>
+    </div>
+
+    <!-- Fireworks JavaScript -->
+    <script>
+        const canvas = document.getElementById('fireworksCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const fireworks = [];
+        const particles = [];
+
+        class Firework {
+            constructor(x, y, targetY, color) {
+                this.x = x;
+                this.y = y;
+                this.targetY = targetY;
+                this.color = color;
+                this.speed = 2;
+                this.exploded = false;
+            }
+
+            update() {
+                if (this.y > this.targetY) {
+                    this.y -= this.speed;
+                } else if (!this.exploded) {
+                    this.explode();
+                    this.exploded = true;
+                }
+            }
+
+            explode() {
+                for (let i = 0; i < 50; i++) {
+                    particles.push(new Particle(this.x, this.y, this.color));
+                }
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+        }
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.size = 3;
+                this.life = 100;
+                this.velocityX = (Math.random() - 0.5) * 5;
+                this.velocityY = (Math.random() - 0.5) * 5;
+            }
+
+            update() {
+                this.x += this.velocityX;
+                this.y += this.velocityY;
+                this.size *= 0.95;
+                this.life -= 2;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            fireworks.forEach((firework, index) => {
+                firework.update();
+                firework.draw();
+                if (firework.exploded) {
+                    fireworks.splice(index, 1);
+                }
+            });
+
+            particles.forEach((particle, index) => {
+                particle.update();
+                particle.draw();
+                if (particle.life <= 0) {
+                    particles.splice(index, 1);
+                }
+            });
+
+            if (Math.random() < 0.05) {
+                const x = Math.random() * canvas.width;
+                const y = canvas.height;
+                const targetY = Math.random() * (canvas.height / 2);
+                const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                fireworks.push(new Firework(x, y, targetY, color));
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+</html>
